@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # 1. Database MySQL
+  mysql_db:
+    image: mysql:8.0
+    container_name: mysql_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
+    ports:
+      - "3307:3306"
+
+  # 2. Backend Nodejs
+  backend:
+    build: ./backend
+    container_name: backend_container
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql_db
+    environment:
+      - DB_HOST=mysql_db
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=testdb
+
+  # 3. Frontend React
+  frontend:
+    build: ./frontend
+    container_name: frontend_container
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
